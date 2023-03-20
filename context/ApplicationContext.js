@@ -1,20 +1,57 @@
-import React, { useState } from 'react'
-import Context from './context'
-import { ably } from '../env'
+import React, { useState } from "react";
+import Context from "./context";
+import { ably } from "../env";
 
-const HUB_STREAM = '<HUB_API_STREAM_CHANNEL>'
+const HUB_STREAM = "<HUB_API_STREAM_CHANNEL>";
 
 export default ApplicationContext = ({ children }) => {
-  const [arrivals, setArrivalsData] = useState(null)
+  const [arrivals, setArrivalsData] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [departures, setDeparturesData] = useState(null)
+  const [departures, setDeparturesData] = useState(null);
 
-  //add subscrpition listeners here 
-  
-  
+  //add subscrpition listeners here
+  const setChannel = (iATA) => {
+    console.log(`This ${iATA} was clicked`);
+    return ably.channels.get(`${HUB_STREAM}:${iATA}`);
+  };
+
+  const departureListener = (message) => {
+    console.log("Still Listening Departure", message.data);
+    message.data && subscribe(message.data);
+  };
+
+  const arrivalListener = (message) => {
+    console.log("Still Listening", message.data);
+    message.data && subscribe(message.data);
+  };
+
+  const subscribe = (data) => {
+    setIsLoading(false);
+    setArrivalsData(data);
+  };
+
   // add unsubscribe listeners here
+  const unsubscribe = (useChannel, type) => {
+    console.log(`unmounting sub ${type}`);
+    useChannel.off();
+    useChannel.unsubscribe();
+    type === "arrival" ? setArrivalsData(null) : setDeparturesData(null);
+    setIsLoading(true);
+  };
+
+  const setArrivals = (iATA, action) => {
+    action === "reset"
+      ? unsubscribe(setChannel(iATA), "arrival")
+      : setChannel(iATA).subscribe(arrivalListener);
+  };
+
+  const setDepartures = (iATA, action) => {
+    action === "reset"
+      ? unsubscribe(setChannel(iATA), "departure")
+      : setChannel(iATA).subscribe(departureListener);
+  };
 
   return (
     <Context.Provider
@@ -24,10 +61,10 @@ export default ApplicationContext = ({ children }) => {
         isLoading,
         setIsLoading,
         setArrivals,
-        setDepartures
+        setDepartures,
       }}
     >
       {children}
     </Context.Provider>
-  )
-}
+  );
+};
