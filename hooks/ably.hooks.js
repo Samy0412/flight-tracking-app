@@ -13,6 +13,22 @@ export const useAblyChannel = (channel, dependencies) => {
 
   useEffect(() => {
     //add ably connection here
+    console.log("Ran Use Effects", channel);
+    // know the current state of the application
+    ably.connection.on(function (stateChange) {
+      console.log("New connection state is " + stateChange.current);
+      setOnMessage(stateChange.current);
+      setLoading(true);
+    });
+    // use the channel scope in the application
+    const useChannel = ably.channels.get(`${CHANNEL_NAME}:${channel}`);
+    useChannel.subscribe((message) => {
+      if (message.data.length > 0) {
+        setOnMessage("Loading Data...");
+        setLoading(false);
+        setChannelData(message.data);
+      }
+    });
   }, dependencies);
 
   return [isLoading, onMessage, channelData];
