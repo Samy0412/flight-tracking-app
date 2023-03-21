@@ -3,10 +3,14 @@ import { StyleSheet } from "react-native";
 import { Container, Content } from "native-base";
 
 import { ListCards } from "../components/ListCards";
-import { arrival as channelData } from "../constants/RawData";
 
 export default ArrivalScreen = ({ navigation }) => {
   // TODO:
+
+  const [isLoading, displayMessage, channelData] = useAblyChannel(
+    "arrivals",
+    []
+  );
 
   const Arrivals = channelData
     ? channelData.map((item, index) => {
@@ -33,7 +37,13 @@ export default ArrivalScreen = ({ navigation }) => {
 
   return (
     <Container style={styles.container}>
-      <Content>{Arrivals}</Content>
+      {isLoading ? (
+        <LoadingScreen message={displayMessage} />
+      ) : (
+        <>
+          <Content>{Arrivals}</Content>
+        </>
+      )}
     </Container>
   );
 };

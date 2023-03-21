@@ -1,34 +1,53 @@
-import React, { useEffect } from 'react'
-import { Container, Text } from 'native-base'
-import { StyleSheet } from 'react-native'
+import React, { useEffect } from "react";
+import { Container, Content } from "native-base";
+import { StyleSheet } from "react-native";
+
+import { ListCards } from "../components/ListCards";
+import { departure as channelData } from "../constants/RawData";
 
 export default DepartureScreen = ({ navigation }) => {
   //TODO:
 
+  const Departures = channelData
+    ? channelData.map((item, index) => {
+        return (
+          <ListCards
+            key={index}
+            text={`${item.origin} - ${item.destination} (${item.iataId})`}
+            icon="ios-airplane"
+            action={() =>
+              navigation.navigate("PopModal", {
+                iataId: item.iataId,
+                action: "arrival",
+              })
+            }
+          />
+        );
+      })
+    : [];
+
   useEffect(() => {
-    console.log('Depature Mounted')
-  }, [])
+    console.log("Depature Mounted");
+  }, []);
 
   return (
     <Container style={styles.container}>
-      <Text style={styles.text}>
-        Complete the Tutorial to see Departures Data
-      </Text>
+      <Content>{Departures}</Content>
     </Container>
-  )
-}
+  );
+};
 
 DepartureScreen.navigationOptions = {
-  title: 'Departures from London',
-}
+  title: "Departures from London",
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   text: {
-    textAlign: 'center',
+    textAlign: "center",
   },
-})
+});
