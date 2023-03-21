@@ -3,6 +3,10 @@ import { StyleSheet } from "react-native";
 import { Container, Content } from "native-base";
 
 import { ListCards } from "../components/ListCards";
+import LoadingScreen from "../components/LoadingScreen";
+import FabButton from "../components/FabButton";
+
+import { useAblyChannel } from "../hooks/ably.hooks";
 
 export default ArrivalScreen = ({ navigation }) => {
   // TODO:
@@ -42,6 +46,7 @@ export default ArrivalScreen = ({ navigation }) => {
       ) : (
         <>
           <Content>{Arrivals}</Content>
+          <FabButton navigation={navigation} channelData={channelData} />
         </>
       )}
     </Container>

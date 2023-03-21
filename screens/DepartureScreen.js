@@ -3,10 +3,17 @@ import { Container, Content } from "native-base";
 import { StyleSheet } from "react-native";
 
 import { ListCards } from "../components/ListCards";
-import { departure as channelData } from "../constants/RawData";
+import LoadingScreen from "../components/LoadingScreen";
+import FabButton from "../components/FabButton";
+
+import { useAblyChannel } from "../hooks/ably.hooks";
 
 export default DepartureScreen = ({ navigation }) => {
   //TODO:
+  const [isLoading, displayMessage, channelData] = useAblyChannel(
+    "departures",
+    []
+  );
 
   const Departures = channelData
     ? channelData.map((item, index) => {
@@ -32,10 +39,18 @@ export default DepartureScreen = ({ navigation }) => {
 
   return (
     <Container style={styles.container}>
-      <Content>{Departures}</Content>
+      {isLoading ? (
+        <LoadingScreen message={displayMessage} />
+      ) : (
+        <>
+          <Content>{Departures}</Content>
+          <FabButton navigation={navigation} channelData={channelData} />
+        </>
+      )}
     </Container>
   );
 };
+0;
 
 DepartureScreen.navigationOptions = {
   title: "Departures from London",
